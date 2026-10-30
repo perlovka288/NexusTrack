@@ -1,0 +1,65 @@
+/* NEXUS v5: ровные скругления окна без чёрных «ушек», белый свет для светлых обложек,
+   страница игры на всю ширину с текстом над светом, «Любимые игры» лентой. Подключается последним. */
+
+/* ===== 1. окно: форма панели задаётся маской, за её краями только прозрачность ===== */
+/* Чёрные «ушки»: у html фон прозрачный, а по правилам CSS в таком случае фон body (чёрный) переносится на весь холст окна.
+   Окно заливалось чёрным целиком, и скруглённая панель была видна только по рамке. Чтобы перенос не срабатывал,
+   даём html «настоящий» прозрачный фон-картинку. Тогда за скруглением панели остаётся полная прозрачность. */
+html.nx-app{background:linear-gradient(transparent,transparent)!important;background-color:transparent!important;color-scheme:normal!important}
+html.nx-app body.sx{color-scheme:dark;box-shadow:none;clip-path:inset(0 round var(--rad))}
+html.nx-app.maxed body.sx{clip-path:none}
+/* тонкая рамка панели рисуется поверх маски, иначе маска обрезала бы её вместе с тенью */
+html.nx-app::after{content:"";position:fixed;inset:var(--fr);border-radius:var(--rad);box-shadow:0 0 0 1px rgba(255,255,255,.09);pointer-events:none;z-index:9999}
+html.nx-app.maxed::after{display:none}
+
+/* ===== 2. логотип ===== */
+body.sx .logo img{height:26px;width:auto}
+body.sx .logo{gap:12px}
+
+/* ===== 3. каталог: белый свет у светлых обложек, текст читается ===== */
+.sx-slide[data-neutral] .sx-info h3,.sx-slide[data-neutral] .sx-info p,.sx-slide[data-neutral] .sx-st{text-shadow:0 1px 14px rgba(0,0,0,.6)}
+.sx-slide[data-neutral] .sx-btn{background:rgba(10,10,14,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sx-slide[data-neutral] .sx-info{background:radial-gradient(125% 95% at 100% 112%,rgba(255,255,255,.62) 0,rgba(255,255,255,.22) 32%,rgba(255,255,255,.06) 58%,transparent 80%),linear-gradient(165deg,#23252e,#0e0d14)}
+
+/* ===== 4. страница игры: на всю ширину, баннер отделён отступом, текст и кнопки выше слоя света ===== */
+html body.sx #page:has(.gp){padding-left:22px;padding-right:22px}
+body.sx .gp{isolation:isolate}
+body.sx .gp .hero{position:relative;z-index:1;margin-top:8px}
+html body.sx #page .gp .gwrap{position:relative;z-index:3;max-width:none;width:100%;margin:34px 0 0;padding:0 0 96px;gap:44px;grid-template-columns:minmax(0,1fr) clamp(320px,26vw,400px)}
+/* свет снизу баннера, как в главном меню: сверху и по бокам ореола нет, под баннером мягкое свечение цвета обложки */
+body.sx.nx-gc::before{opacity:.22}
+body.sx.nx-gc .gp::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:-22px;right:-22px;top:calc(min(31vw,410px) - 140px);height:460px;
+  background:radial-gradient(58% 75% at 50% 18%,color-mix(in srgb,var(--acc) 38%,transparent),color-mix(in srgb,var(--acc) 12%,transparent) 48%,transparent 74%)}
+body.sx.nx-white .gp::before{background:radial-gradient(58% 75% at 50% 18%,rgba(255,255,255,.30),rgba(255,255,255,.09) 48%,transparent 74%)}
+body.sx .gp .hero{box-shadow:0 0 0 1px rgba(255,255,255,.07),0 46px 90px -64px color-mix(in srgb,var(--acc) 70%,transparent)}
+/* затемнение к нижнему краю баннера */
+body.sx .gp .hero::after{background:linear-gradient(rgba(0,0,0,.12),transparent 30%,rgba(0,0,0,.5) 62%,rgba(0,0,0,.86) 86%,#000 100%)}
+body.sx .gp .gmain h1,body.sx .gp .gmeta{text-shadow:0 2px 18px rgba(0,0,0,.55)}
+/* активная вкладка читается на любом цвете света, в том числе на белом */
+body.sx .gp .tabs button.on{color:var(--acc-ink,#fff)}
+@media(max-width:1100px){html body.sx #page .gp .gwrap{grid-template-columns:minmax(0,1fr);gap:24px}}
+
+/* ===== 5. «Любимые игры» в профиле: лента как в каталоге ===== */
+.pfsec .favrow.sx-sec{margin-bottom:6px}
+.pfsec .favrow .row-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pfsec .favrow .sx-rr{display:flex;align-items:center;gap:8px}
+
+/* ===== 6. профиль без цветного света ===== */
+/* Фоновое свечение (--hc) оставалось от последней открытой игры и красило верх профиля. На профиле его нет. */
+body.sx:has(#profileBox:not([hidden]))::before{display:none}
+
+/* ===== 7. быстрая отрисовка ===== */
+/* Бесконечные анимации перерисовывали большие градиенты каждый кадр: каталог держал ~17 к/с даже без действий. Теперь фон и карточки статичны. */
+body.sx::before{animation:none!important}
+.sx-info,.sx-slide .sx-info{animation:none!important}
+.sx-slide.on .sx-info{animation:sxFade .75s var(--ease) both!important}
+.spotlight .spot-lsearch:not(:focus-within)::before,.spotlight .spot-lsearch:not(:focus-within)::after{animation:none!important}
+/* карточки: без «вылета» при каждой смене тега/страницы */
+body.sx .grid .gc,body.sx #grid .gc{animation:none!important}
+/* карточки вне экрана не стилизуются, не раскладываются и не рисуются, пока до них не докрутили */
+body.sx #grid:not(.listmode) .gc{content-visibility:auto;contain-intrinsic-size:auto 240px}
+body.sx #grid.is-loading{transition:none}
+
+/* ===== 8. календарь релизов: сегодняшние игры ===== */
+.cal-row.cal-today .cal-date{background:var(--acc);color:var(--acc-ink,#fff)}
+.cal-row.cal-today .cal-date b,.cal-row.cal-today .cal-date span{color:inherit}

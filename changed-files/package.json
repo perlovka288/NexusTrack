@@ -1,0 +1,55 @@
+{
+  "name": "nexus",
+  "version": "3.3.7",
+  "description": "NEXUS: библиотека игр с автоматическим учётом времени",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "web": "node server.js",
+    "dist": "electron-builder --win nsis",
+    "test": "node --test"
+  },
+  "build": {
+    "appId": "com.nexus.app",
+    "productName": "NEXUS",
+    "copyright": "NEXUS",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "lib/**",
+      "public/**",
+      "assets/**",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NEXUS",
+      "deleteAppDataOnUninstall": false,
+      "language": "1049",
+      "installerLanguages": [
+        "ru_RU",
+        "en_US"
+      ],
+      "artifactName": "NEXUS-Setup-${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "33.2.0",
+    "electron-builder": "^25.1.8"
+  }
+}

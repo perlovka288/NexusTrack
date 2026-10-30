@@ -1,0 +1,289 @@
+/* NEXUS v7 (объединённая версия): страница игры и библиотека. Подключается последним.
+   Баннер без границ, сетка 1fr + 320px, тонкая прокрутка, стеклянный прогресс, поиск-лупа, меню профиля.
+   Акцент страницы задаёт nexus-v7.js через --accent-color. */
+
+/* ===== 1. Баннер: высокий, растворяется со всех сторон, название выплывает из него ===== */
+html body.sx #page .gp .hero{
+  position:relative;z-index:1;margin:0;height:clamp(300px,36vw,520px);min-height:0;
+  background:none!important;border:0;border-radius:0!important;box-shadow:none!important;overflow:hidden;
+}
+html body.sx #page .gp .hero::before,html body.sx #page .gp .hero::after{content:none!important;display:none!important}
+html body.sx #page .gp .hero .bg{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center 20%;opacity:1;filter:saturate(1.08) contrast(1.03);
+  --nx7-mv:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.55) 5%,#000 13%,#000 46%,rgba(0,0,0,.86) 58%,rgba(0,0,0,.62) 68%,rgba(0,0,0,.36) 78%,rgba(0,0,0,.15) 88%,rgba(0,0,0,.04) 96%,transparent 100%);
+  --nx7-mh:linear-gradient(to right,transparent 0,rgba(0,0,0,.3) 6%,rgba(0,0,0,.65) 12%,rgba(0,0,0,.9) 18%,#000 26%,#000 82%,rgba(0,0,0,.6) 92%,rgba(0,0,0,.2) 97%,transparent 100%);
+  -webkit-mask-image:var(--nx7-mv),var(--nx7-mh);mask-image:var(--nx7-mv),var(--nx7-mh);
+  -webkit-mask-composite:source-in;mask-composite:intersect;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;
+}
+html body.sx #page .gp .gwrap{margin-top:calc(-1 * clamp(70px,9vw,150px))}
+html body.sx #page .gp .gmain h1,html body.sx #page .gp .gmeta{position:relative;text-shadow:0 2px 22px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.4)}
+html body.sx #page .gp .hero>.logo-i{filter:drop-shadow(0 6px 22px rgba(0,0,0,.55))}
+@media(max-width:900px){
+  html body.sx #page .gp .hero{height:clamp(210px,56vw,320px)}
+  html body.sx #page .gp .gwrap{margin-top:-48px}
+}
+/* кнопка «Назад»: стеклянная, у левого края баннера */
+html body.sx .gp .hero>.back{
+  left:18px!important;top:18px!important;z-index:4;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px 0 12px;
+  border-radius:99px;background:rgba(10,10,14,.42);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.84rem;font-weight:600;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 24px -10px rgba(0,0,0,.7);transition:background .2s,color .2s,transform .2s;
+}
+html body.sx .gp .hero>.back:hover{background:var(--acc);border-color:transparent;color:var(--acc-ink,#fff);transform:translateX(-2px)}
+html body.sx .gp .hero>.logo-i{left:clamp(24px,4vw,64px)}
+/* обложки в карточках и слайдах: лицо героя, а не небо */
+body.sx .gc img,body.sx .gc-link img,body.sx .sx-track .gc.sx-wide img{object-fit:cover;object-position:center 20%}
+
+
+/* ===== 2. сетка: контент + правая панель 320px ===== */
+@media(min-width:901px){
+  html body.sx #page .gp .gwrap{
+    display:grid;grid-template-columns:minmax(0,1fr) 320px;   /* minmax(0,…) = то же 1fr, но без распирания длинным содержимым */
+    column-gap:40px;align-items:start;
+    width:100%;max-width:1360px;margin-inline:auto;
+    padding:0 32px 96px;box-sizing:border-box;               /* отступ с обеих сторон: панель не прилипает к краю и полосе прокрутки */
+  }
+  html body.sx #page .gp #pside{
+    grid-column:2;width:320px;min-width:0;box-sizing:border-box;
+    position:sticky;top:calc(var(--fr,14px) + 98px);align-self:start;
+    max-height:calc(100vh - var(--fr,14px) - 120px);
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    padding:26px 0 40px 0;
+  }
+  html body.sx #page .gp .gmain{grid-column:1;min-width:0}
+}
+@media(max-width:900px){
+  html body.sx #page .gp .gwrap{grid-template-columns:minmax(0,1fr);padding-inline:16px}
+  html body.sx #page .gp #pside{width:auto}
+}
+
+/* ===== невидимая прокрутка везде: колесо, тачпад и клавиши работают как раньше ===== */
+*{scrollbar-width:none!important;scrollbar-color:transparent transparent!important;-ms-overflow-style:none}
+*::-webkit-scrollbar,html.nx-app body.sx::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent}
+*::-webkit-scrollbar-thumb,*::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent!important;border:0}
+
+/* ===== 3. Плашка прогресса: Glassmorphism ===== */
+body.sx .gp .progbox{border:0;background:none;border-radius:0;padding:0;margin:26px 0 6px}
+.gprog{
+  position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;
+  padding:18px 20px 18px;border-radius:26px;
+  border:1px solid rgba(255,255,255,.13);
+  background:linear-gradient(140deg,rgba(255,255,255,.1),rgba(255,255,255,.03) 60%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 22px 50px -28px rgba(0,0,0,.75);
+}
+.gprog::before{
+  content:"";position:absolute;z-index:-1;left:-70px;top:-120px;width:300px;height:300px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--acc) 48%,transparent),transparent 68%);
+}
+.gprog::after{
+  content:"";position:absolute;z-index:-1;right:-90px;bottom:-140px;width:260px;height:260px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--acc) 22%,transparent),transparent 70%);
+}
+.gprog-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px}
+.gprog-pct{display:flex;align-items:baseline;gap:2px;line-height:1}
+.gprog-num{
+  font:600 clamp(2.6rem,4.2vw,3.4rem)/1 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.055em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,#fff 10%,color-mix(in srgb,var(--acc) 55%,#fff) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 4px 18px color-mix(in srgb,var(--acc) 45%,transparent));
+}
+.gprog-sign{font:500 1.35rem/1 Inter,system-ui,sans-serif;color:rgba(255,255,255,.55);letter-spacing:-.02em}
+.gprog-src{max-width:55%;text-align:right;font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.6)}
+.gprog.is-empty .gprog-num{-webkit-text-fill-color:rgba(255,255,255,.35);background:none;color:rgba(255,255,255,.35)}
+/* ползунок — единственная полоса прогресса, закрашивается акцентом */
+.gprog input[type=range]{
+  --p:0%;-webkit-appearance:none;appearance:none;display:block;width:100%;height:22px;margin:0 0 12px;background:transparent;cursor:pointer;outline:0;
+}
+.gprog input[type=range]::-webkit-slider-runnable-track{
+  height:6px;border-radius:99px;
+  background:linear-gradient(90deg,var(--acc) var(--p),rgba(255,255,255,.14) var(--p));
+}
+.gprog input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;margin-top:-6px;border-radius:50%;background:#fff;border:0;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 28%,transparent),0 4px 10px rgba(0,0,0,.5);border:3px solid var(--acc);box-sizing:border-box;transition:transform .15s,box-shadow .2s;
+}
+.gprog input[type=range]:hover::-webkit-slider-thumb,.gprog input[type=range]:focus-visible::-webkit-slider-thumb{transform:scale(1.12)}
+.gprog input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:rgba(255,255,255,.14)}
+.gprog input[type=range]::-moz-range-progress{height:6px;border-radius:99px;background:var(--acc)}
+.gprog input[type=range]::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 40%,transparent)}
+/* таблетки */
+.gprog-pills{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.gprog-pills button{
+  height:30px;min-width:52px;padding:0 13px;border-radius:99px;cursor:pointer;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#d9dbe6;
+  font:600 .8rem/1 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;
+  transition:background .2s,color .2s,border-color .2s,box-shadow .2s,transform .15s;
+}
+.gprog-pills button:hover{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.22)}
+.gprog-pills button:active{transform:scale(.96)}
+.gprog-pills button.on{
+  background:var(--acc);border-color:transparent;color:var(--acc-ink,#fff);
+  box-shadow:0 6px 18px -6px var(--acc);
+}
+.gprog-pills .gp-tail{display:flex;align-items:center;gap:6px;margin-left:auto}
+.gprog-pills .gp-auto{min-width:0;background:transparent;border-style:dashed}
+.gprog-pills .gp-ref{min-width:0;width:30px;padding:0;display:grid;place-items:center}
+.gprog-pills .gp-ref svg{width:14px;height:14px}
+@media(max-width:700px){.gprog{padding:15px 16px;border-radius:22px}.gprog-src{max-width:50%}}
+
+
+.gprog-pills button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.gprog *,.nx7-menu,.nx7-it,html body.sx .gp .gp-search,html body.sx .gp .gp-search *{transition:none!important}}
+/* ===== 4. меню профиля ===== */
+body.sx #nav .nl.prof::after{transition:transform .25s,top .25s}
+body.sx #nav .nl.prof[aria-expanded=true]::after{transform:rotate(-135deg);top:20px}
+
+.nx7-menu{
+  position:fixed;z-index:400;min-width:224px;max-width:calc(100vw - 16px);padding:8px;border-radius:18px;
+  background:linear-gradient(160deg,rgba(32,34,46,.88),rgba(16,17,24,.92));
+  -webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 24px 60px -12px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.1);
+  opacity:0;transform:translateY(6px) scale(.97);transform-origin:var(--nx7-ox,0 50%);pointer-events:none;
+  transition:opacity .16s ease,transform .2s cubic-bezier(.2,.7,.2,1);
+}
+.nx7-menu.on{opacity:1;transform:none;pointer-events:auto}
+.nx7-menu[hidden]{display:none}
+.nx7-mh{display:flex;align-items:center;gap:11px;padding:8px 10px 10px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.nx7-av{flex:none;width:38px;height:38px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--s3,#222532);font-weight:700;font-size:.85rem;color:#fff;box-shadow:0 0 0 2px var(--acc,#ff6a2b)}
+.nx7-av img{width:100%;height:100%;object-fit:cover;display:block}
+.nx7-who{min-width:0;display:flex;flex-direction:column;gap:2px}
+.nx7-who b{font-size:.92rem;font-weight:650;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nx7-who span{font-size:.74rem;color:rgba(255,255,255,.55)}
+.nx7-it{
+  display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-radius:12px;
+  background:transparent;color:rgba(255,255,255,.88);font-family:inherit;font-weight:500;font-size:.9rem;line-height:1.1;text-align:left;cursor:pointer;
+  transition:background-color .15s,color .15s;
+}
+.nx7-it svg{flex:none;width:17px;height:17px;opacity:.75}
+.nx7-it:hover,.nx7-it:focus-visible{background:rgba(255,255,255,.09);color:#fff;outline:none}
+.nx7-it:hover svg,.nx7-it:focus-visible svg{opacity:1}
+.nx7-it.cur{background:var(--acc-soft,rgba(255,255,255,.1))}
+.nx7-sep{height:1px;margin:6px 8px;background:rgba(255,255,255,.08)}
+.nx7-it.out{color:#ff8d8d}
+.nx7-it.out:hover,.nx7-it.out:focus-visible,.nx7-it.out.ask{background:rgba(255,80,80,.16);color:#ffb0b0}
+@media(prefers-reduced-motion:reduce){.nx7-menu,.nx7-it,#progbox *{transition:none!important}}
+
+/* ===== 5. Поиск по странице игры: лупа, по клику раскрывается ===== */
+html body.sx #page .gp .gscroll{position:relative}
+html body.sx .gp .gp-search{
+  position:absolute;top:8px;right:0;z-index:6;display:flex;align-items:center;gap:0;box-sizing:border-box;
+  width:42px;height:42px;max-width:none;margin:0;padding:0;overflow:visible;cursor:pointer;color:#d9dbe6;
+  border:1px solid rgba(255,255,255,.14);border-radius:99px;background:rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  transition:width .38s cubic-bezier(.2,.7,.2,1),background .2s,border-color .2s,box-shadow .2s;
+}
+html body.sx .gp .gp-search:hover{background:rgba(255,255,255,.12);color:#fff}
+html body.sx .gp .gp-search .gps-ico{width:40px;height:40px;flex:none}
+html body.sx .gp .gp-search .gps-ico svg{width:17px;height:17px}
+html body.sx .gp .gp-search input{
+  flex:1 1 0;width:0;min-width:0;height:100%;padding:0;opacity:0;pointer-events:none;
+  background:transparent!important;box-shadow:none!important;border:0!important;outline:0!important;color:#fff;font-size:.9rem;
+  transition:opacity .2s;
+}
+html body.sx .gp .gp-search .gps-clear{flex:none;width:0;height:28px;margin-right:0;padding:0;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s}
+html body.sx .gp .gp-search .gp-sug{display:none}
+html body.sx .gp .gp-search.open{
+  width:min(380px,100%);cursor:text;background:rgba(16,17,23,.82);border-color:color-mix(in srgb,var(--acc) 70%,transparent);
+  box-shadow:0 12px 34px -14px #000,0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent);color:#fff;
+}
+html body.sx .gp .gp-search.open input{opacity:1;pointer-events:auto;transition:opacity .25s .15s}
+html body.sx .gp .gp-search.open .gps-clear{width:28px;margin-right:7px;opacity:1;pointer-events:auto;transition:opacity .25s .15s}
+html body.sx .gp .gp-search.open .gp-sug{display:block}
+html body.sx .gp .gp-search.open .gp-sug[hidden]{display:none}
+html body.sx .gp .gp-search:focus-within{border-color:color-mix(in srgb,var(--acc) 70%,transparent)}
+
+/* ===== 6. Библиотека: единая ширина, стеклянная статистика, чистый поиск, сегментированные вкладки ===== */
+/* заголовок, статистика и панель поиска стояли в разных контейнерах (отсюда перекос): выравниваем по краю сетки игр */
+html body.sx #home:has(#stats:not([hidden])) .pagehead,
+html body.sx #home:has(#stats:not([hidden])) #stats,
+html body.sx #home:has(#stats:not([hidden])) .spotlight,
+html body.sx #home:has(#stats:not([hidden])) #folderbar{max-width:none!important;margin-left:0!important;margin-right:0!important;width:auto}
+html body.sx #home:has(#stats:not([hidden])) .pagehead{margin:30px 0 18px!important}
+html body.sx #home:has(#stats:not([hidden])) .pagehead h1{
+  font-size:clamp(1.7rem,2.6vw,2.2rem)!important;font-weight:750;letter-spacing:-.035em;
+  background:linear-gradient(180deg,#fff 30%,color-mix(in srgb,var(--acc) 40%,#c9ccd8));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+}
+/* карточки статистики */
+html body.sx #stats{grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:22px}
+html body.sx #stats>div,html body.sx #stats>div:first-child{
+  --sc:var(--acc);position:relative;overflow:hidden;padding:16px 20px 15px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.09);
+  background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--sc) 16%,transparent),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .25s,box-shadow .25s;
+}
+html body.sx #stats>div::before{content:none;display:none}
+html body.sx #stats>div:nth-child(2){--sc:#3ddc84}
+html body.sx #stats>div:nth-child(3){--sc:#5aa9ff}
+html body.sx #stats>div:nth-child(4){--sc:#ffc247}
+html body.sx #stats>div:nth-child(5){--sc:#ff5d6c}
+html body.sx #stats>div:nth-child(6){--sc:#c9ccd8}
+html body.sx #stats>div:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--sc) 45%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 18px 40px -24px var(--sc)}
+html body.sx #stats b{font-size:clamp(1.45rem,1.9vw,1.75rem);font-weight:700;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:#fff;white-space:nowrap}
+html body.sx #stats small{display:block;margin-top:3px;font-size:.74rem;font-weight:500;letter-spacing:.02em;color:rgba(255,255,255,.58)}
+
+/* поиск по библиотеке: чистая стеклянная «таблетка», без подсвеченного прямоугольника внутри */
+html body.sx .spotlight.is-library .spot-lsearch{
+  height:50px;padding:0 20px;gap:10px;border-radius:99px;max-width:none;width:100%;box-sizing:border-box;color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+html body.sx .spotlight.is-library .spot-lsearch:hover{background:rgba(255,255,255,.08)}
+html body.sx .spotlight.is-library .spot-lsearch:focus-within{
+  background:rgba(255,255,255,.08);border-color:color-mix(in srgb,var(--acc) 70%,transparent);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 18%,transparent),0 14px 34px -18px #000;color:#fff;
+}
+html body.sx .spotlight.is-library .spot-lsearch input{background:transparent!important;box-shadow:none!important;border:0!important;outline:0!important;height:100%;color:#fff;font-size:.96rem}
+html body.sx .spotlight.is-library .spot-lsearch input::placeholder{color:rgba(255,255,255,.45)}
+html body.sx .spotlight.is-library .spot-lsearch .search-clear{background:rgba(255,255,255,.1);border:0;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;color:#fff}
+
+/* вкладки статусов: сегментированная стеклянная лента */
+html body.sx .spotlight.is-library .spot-chips{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:4px;margin:0;padding:6px;border-radius:99px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+}
+html body.sx .spotlight.is-library .spot-chips .fc{
+  padding:9px 16px;border-radius:99px;font-size:.88rem;font-weight:600;color:rgba(255,255,255,.62);background:transparent;
+  transition:background .2s,color .2s,transform .15s,box-shadow .2s;
+}
+html body.sx .spotlight.is-library .spot-chips .fc:hover{background:rgba(255,255,255,.08);color:#fff}
+html body.sx .spotlight.is-library .spot-chips .fc:active{transform:scale(.97)}
+html body.sx .spotlight.is-library .spot-chips .fc.on{background:var(--acc);color:var(--acc-ink,#fff);box-shadow:0 8px 22px -10px var(--acc)}
+html body.sx .spotlight.is-library .spot-chips .fc i{
+  display:inline-block;min-width:20px;margin-left:7px;padding:2px 7px;border-radius:99px;font-style:normal;font-size:.72rem;line-height:1.2;text-align:center;
+  background:rgba(255,255,255,.1);opacity:1;color:inherit;
+}
+html body.sx .spotlight.is-library .spot-chips .fc.on i{background:rgba(0,0,0,.2)}
+/* «Старт»: выбор вкладки по умолчанию: тихая капсула в конце ленты вместо системного селекта */
+html body.sx .spotlight.is-library .libpref{
+  order:99;margin-left:auto;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 6px 0 14px;border-radius:99px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.55);font-size:.76rem;font-weight:500;
+}
+html body.sx .spotlight.is-library .libpref select{
+  -webkit-appearance:none;appearance:none;height:26px;padding:0 24px 0 6px;border:0;border-radius:99px;background-color:transparent;color:#fff;font:600 .8rem/1 inherit;cursor:pointer;outline:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 7px center;
+}
+html body.sx .spotlight.is-library .libpref select option{background:#14151b;color:#fff}
+html body.sx .spotlight.is-library .libpref:hover{background:rgba(255,255,255,.09)}
+html body.sx .spotlight.is-library .spot-card{align-items:stretch;gap:12px}
+@media(max-width:700px){html body.sx .spotlight.is-library .spot-chips{border-radius:22px}html body.sx .spotlight.is-library .libpref{margin-left:0}}
+
+/* лента статусов библиотеки в окне не на весь экран: не ломаем форму и ужимаем вкладки (если не влезает, «Старт» уходит во вторую строку аккуратно) */
+html body.sx .spotlight.is-library .spot-chips{border-radius:26px;row-gap:6px;max-width:100%;box-sizing:border-box}
+@media(max-width:1240px){
+  html body.sx .spotlight.is-library .spot-chips .fc{padding:8px 12px;font-size:.84rem}
+  html body.sx .spotlight.is-library .spot-chips .fc i{margin-left:5px;padding:2px 6px;min-width:18px}
+  html body.sx .spotlight.is-library .libpref{height:32px;padding:0 4px 0 10px}
+  html body.sx .spotlight.is-library .libpref span{display:none}
+  html body.sx .spotlight.is-library .libpref select{max-width:150px}
+}
+@media(max-width:980px){
+  html body.sx .spotlight.is-library .spot-chips{padding:5px;gap:3px}
+  html body.sx .spotlight.is-library .spot-chips .fc{padding:7px 10px;font-size:.8rem}
+  html body.sx .spotlight.is-library .libpref{margin-left:auto}
+}

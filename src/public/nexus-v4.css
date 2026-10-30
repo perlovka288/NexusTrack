@@ -1,0 +1,201 @@
+/* NEXUS v4: круглое окно без рамки, компактные иконки, акцент из настроек, цвет игры, референс «Steam». Подключается последним. */
+:root{--rad:30px;--ic:17px}
+
+/* ===== 1. окно: прозрачный фон, скруглённая панель с отступом, как в лаунчерах ===== */
+html.nx-app{background:transparent!important;overflow:hidden;height:100%}
+html.nx-app body.sx{position:fixed;inset:var(--fr);margin:0;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:var(--rad);
+  box-shadow:0 0 0 1px rgba(255,255,255,.09);scrollbar-width:thin;scrollbar-color:#2a2a30 transparent}
+html.nx-app body.sx::before{border-radius:var(--rad)}
+/* Верхняя панель и её подложка (затемнение с размытием) лежат поверх окна и не обрезаются его скруглением:
+   раньше у них были квадратные верхние углы, и они торчали чёрными уголками за скруглённой панелью. */
+html.nx-app .sx-bar,html.nx-app .sx-bar::before{border-radius:var(--rad) var(--rad) 0 0}
+html.nx-app body.sx::-webkit-scrollbar{width:8px}
+html.nx-app body.sx::-webkit-scrollbar-track{background:transparent;margin:var(--rad) 0}
+html.nx-app body.sx::-webkit-scrollbar-thumb{border-radius:8px;border:2px solid transparent;background-clip:content-box}
+/* развёрнутое окно: без отступов и скруглений */
+html.nx-app.maxed{--fr:0px;--rad:0px}
+html.nx-app.maxed body.sx{box-shadow:none}
+/* затемнения поверх всего окна повторяют форму панели */
+html.nx-app .lb,html.nx-app .modal,html.nx-app .mlb,html.nx-app body.sx:has(#fpanel:not([hidden]))::after{inset:var(--fr);border-radius:var(--rad)}
+html.nx-app .toast{margin-bottom:var(--fr)}
+/* Фильтры: main#home изолирован (isolation:isolate), поэтому панель с z-index 44 оказывалась внутри него, ниже слоя
+   затемнения (z-index 43), и вся панель выглядела размытой и тёмной. Пока панель открыта, снимаем изоляцию,
+   а само затемнение делаем без blur (он ещё и нагружал прозрачное окно). */
+body.sx:has(#fpanel:not([hidden])) main#home{isolation:auto}
+/* Панель фильтров в библиотеке: width:100% из раскладки карточки растягивал
+   fixed-панель шире экрана, из-за чего правая часть обрезалась. */
+body.sx #fpanel{width:auto}
+html.nx-app body.sx:has(#fpanel:not([hidden]))::after,body.sx:has(#fpanel:not([hidden]))::after{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(0,0,0,.55)}
+
+/* перетаскивание за верхнюю панель и логотип */
+html.nx-app .sx-bar,html.nx-app body.sx .logo{-webkit-app-region:drag}
+html.nx-app .sx-bar>*,html.nx-app body.sx #nav .nl.prof,html.nx-app .nx-wc,html.nx-app .nx-rz,html.nx-app #fpanel{-webkit-app-region:no-drag}
+html.nx-app.maxed .sx-bar,html.nx-app.maxed body.sx .logo{-webkit-app-region:no-drag}
+
+/* кнопки окна */
+.nx-wc{display:none}
+html.nx-app .nx-wc{position:fixed;z-index:70;top:calc(var(--fr) + 15px);right:calc(var(--fr) + 16px);display:flex;gap:6px;padding:4px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--line);backdrop-filter:blur(14px)}
+.nx-wc button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#a9abb8;transition:.2s var(--ease)}
+.nx-wc button svg{width:13px;height:13px}
+.nx-wc button:hover{background:rgba(255,255,255,.12);color:#fff}
+.nx-wc button.x:hover{background:#e5484d;color:#fff}
+/* профиль и панель сдвигаются левее кнопок окна */
+html.nx-app body.sx #nav .nl.prof{right:calc(var(--fr) + 30px + 108px)}
+html.nx-app .sx-bar{padding-right:calc(270px + 108px)}
+
+/* ручки изменения размера (стандартная рамка у прозрачных окон не работает) */
+.nx-rz{display:none}
+html.nx-app .nx-rz{display:block;position:fixed;z-index:200;touch-action:none}
+html.nx-app.maxed .nx-rz{display:none}
+.nx-rz[data-e=n]{top:0;left:18px;right:18px;height:9px;cursor:ns-resize}
+.nx-rz[data-e=s]{bottom:0;left:18px;right:18px;height:9px;cursor:ns-resize}
+.nx-rz[data-e=w]{left:0;top:18px;bottom:18px;width:9px;cursor:ew-resize}
+.nx-rz[data-e=e]{right:0;top:18px;bottom:18px;width:9px;cursor:ew-resize}
+.nx-rz[data-e=nw]{top:0;left:0;width:18px;height:18px;cursor:nwse-resize}
+.nx-rz[data-e=se]{bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize}
+.nx-rz[data-e=ne]{top:0;right:0;width:18px;height:18px;cursor:nesw-resize}
+.nx-rz[data-e=sw]{bottom:0;left:0;width:18px;height:18px;cursor:nesw-resize}
+
+/* ===== 2. иконки: компактнее и ровнее ===== */
+body.sx svg.ic{stroke-width:1.9}
+body.sx #nav .nl,body.sx #nav .ib{height:44px;gap:13px;padding:0 10px 0 8px;font-size:.92rem}
+body.sx #nav .nli{width:32px;height:32px;border-radius:10px!important;background:rgba(255,255,255,.05)!important;transition:background .25s,color .25s}
+body.sx #nav .nli svg{width:17px;height:17px}
+body.sx #nav .nl.on .nli,body.sx #nav .ib.on .nli{background:var(--acc-soft)!important;color:var(--acc)!important}
+body.sx #nav .nl:hover .nli,body.sx #nav .ib:hover .nli{background:rgba(255,255,255,.09)!important}
+body.sx #nav .nl i{font-size:.7rem;padding:2px 7px}
+body.sx #nav .nl.on::before,body.sx #nav .ib.on::before{left:-22px;top:10px;bottom:10px;width:3px}
+body.sx .logo img{height:22px;width:auto}
+/* верхняя панель */
+body.sx .sx-bar .search input{height:42px;border-radius:99px;font-size:.88rem;padding-left:42px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+body.sx .search-ico{left:15px;top:12px}body.sx .search-ico svg{width:16px;height:16px}
+.sx-bar .sx-ib,body.sx .sx-bar .spot-circle,body.sx .sx-bar .sortl,body.sx .sx-bar .fbtn,body.sx .sx-bar .fbtn.fc{width:40px;height:40px;min-width:40px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.sx-bar svg{width:var(--ic);height:var(--ic)}
+body.sx .sx-bar .fbtn .cnt{min-width:17px;height:17px;font-size:.64rem;color:var(--acc-ink,#fff)}
+body.sx .vmode{height:40px}body.sx .vmode button{width:32px;height:32px}body.sx .vmode button svg{width:15px;height:15px}
+body.sx .npa{width:34px;height:34px}
+body.sx #nav .nl.prof{height:40px}
+/* карточки и ленты */
+.sx-arr{width:32px;height:32px}.sx-arr svg{width:14px;height:14px}
+body.sx .gc-add{width:32px;height:32px}body.sx .gc-add::before{width:16px;height:16px}
+body.sx .gc-go{width:30px;height:30px}body.sx .gc-go svg{width:14px;height:14px}
+.sx-chip{padding:7px 15px;font-size:.78rem}
+.sx-chip.ico{width:32px;height:32px}.sx-chip.ico svg{width:14px;height:14px}
+.sx-meta span{padding:6px 12px;font-size:.78rem}.sx-meta svg{width:13px;height:13px}
+.sx-btn{height:46px}.sx-btn svg{width:16px;height:16px}.sx-btn.sec{width:46px}
+body.sx .row-all{padding:7px 14px;font-size:.78rem}
+body.sx .row-all svg{width:13px;height:13px}
+/* страница игры */
+body.sx .gp .ib{width:36px;height:36px}
+body.sx .gp .ib svg{width:16px;height:16px}
+body.sx .gp .back{height:40px;padding:0 16px;font-size:.85rem}
+body.sx .gp .back svg{width:14px;height:14px}
+body.sx .gp .acc summary svg{width:15px;height:15px}
+body.sx .gp .acc-t svg{width:16px;height:16px;opacity:.85}
+body.sx .gp .gmeta svg{width:14px;height:14px}
+body.sx .gp .tags svg,body.sx .gp .chip svg{width:12px;height:12px}
+body.sx .gp .vnav{width:42px;height:42px}body.sx .gp .vnav svg{width:18px;height:18px}
+
+/* ===== 3. акцент: кнопки и активные состояния всегда берут выбранный цвет ===== */
+body.sx .gc-go,body.sx .gc-st.s-playing,body.sx .fc.on,body.sx .vmode button.on,body.sx .ib.on,body.sx .tabs button.on,body.sx .seg button.on,body.sx .nl.on .nli{color:var(--acc-ink,#fff)}
+body.sx .tabs button.on,body.sx .seg button.on{background:var(--acc);border-color:var(--acc)}
+body.sx .fc.on{background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 74%,#000));border-color:transparent;color:var(--acc-ink,#fff)}
+body.sx .btn:not(.sm){background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 72%,#000));color:var(--acc-ink,#fff)}
+body.sx #nav .nl.on .nli svg{color:var(--acc)}
+.sx-dots button.on{background:var(--acc)}
+/* настройки: переключатель цвета игры */
+.gcsw{display:flex;align-items:center;gap:14px;margin-top:18px;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);cursor:pointer;position:relative}
+.gcsw input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.gcsw-t{flex:1;display:grid;gap:3px}.gcsw-t b{font-size:.9rem;font-weight:600}.gcsw-t small{color:var(--mut);font-size:.78rem;line-height:1.4}
+.gcsw-k{flex:none;width:44px;height:26px;border-radius:99px;background:#2a2a30;position:relative;transition:.25s var(--ease)}
+.gcsw-k::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s var(--ease)}
+.gcsw input:checked~.gcsw-k{background:var(--acc)}.gcsw input:checked~.gcsw-k::after{transform:translateX(18px)}
+
+/* ===== 4. цвет игры на её странице ===== */
+body.sx.nx-gc .gp{position:relative}
+body.sx.nx-gc .gp::before{content:"";position:absolute;left:-30px;right:-30px;top:-90px;height:640px;z-index:-1;pointer-events:none;background:radial-gradient(60% 70% at 50% 0,color-mix(in srgb,var(--acc) 34%,transparent),transparent 72%)}
+body.sx .gp .hero{border-radius:30px;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 40px 90px -50px var(--acc)}
+body.sx .gp .hero::after{background:linear-gradient(rgba(0,0,0,.15),transparent 30%,rgba(0,0,0,.5) 68%,#000 100%)}
+body.sx .gp h1{font-size:clamp(2rem,3.4vw,3.1rem);font-weight:800;letter-spacing:-.035em}
+body.sx .gp .tabs{display:inline-flex;gap:4px;padding:5px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+body.sx .gp .tabs button{border-radius:99px;padding:9px 20px;font-size:.88rem;font-weight:600;color:#b4b6c2;transition:.25s var(--ease)}
+body.sx .gp .tabs button:hover:not(.on){color:#fff;background:rgba(255,255,255,.06)}
+body.sx .gp .acc{border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));transition:border-color .3s}
+body.sx .gp .acc[open]{border-color:color-mix(in srgb,var(--acc) 38%,transparent)}
+body.sx .gp .tile{border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015))}
+body.sx .gp .chip,body.sx .gp .tags button{border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+body.sx .gp .tags button:hover,body.sx .gp .chip:hover{border-color:var(--acc);background:var(--acc-soft)}
+body.sx .gp .progbox{border-radius:22px;border:1px solid var(--line);background:linear-gradient(160deg,color-mix(in srgb,var(--acc) 10%,transparent),rgba(255,255,255,.02))}
+
+/* ===== 5. референс «Steam»: мягкие постеры, стеклянные панели ===== */
+/* Карточки ниже и компактнее (раньше были 2:3, а первая «широкая» тянула всю ленту до ~500 px в высоту).
+   Теперь все карточки одной высоты 4:5, первая — альбомная 7:5, как большая плитка в Steam. */
+body.sx{--cw-v4:clamp(148px,10.2vw,184px)}
+body.sx .sx-track{--cw:var(--cw-v4);gap:16px;align-items:flex-start}
+body.sx .sx-track .gc{aspect-ratio:4/5;border-radius:18px;box-shadow:0 12px 28px -16px rgba(0,0,0,.75)}
+body.sx .sx-track .gc.sx-wide{flex-basis:calc(var(--cw)*1.75);width:calc(var(--cw)*1.75);aspect-ratio:7/5}
+body.sx .grid{grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:16px}
+body.sx .grid .gc{aspect-ratio:4/5;border-radius:18px}
+body.sx .sx-track .gc img{transition:transform .8s var(--ease)}
+body.sx .sx-track .gc:hover img{transform:scale(1.05)}
+body.sx .sx-sec{margin-bottom:38px}
+body.sx .row-h h2{font-size:1.14rem}
+.sx-stage{border-radius:26px}.sx-info{border-radius:26px}
+.sx-thumbs button{border-radius:18px}
+.sx-info h3{font-size:1.5rem}
+.sx-btn{background:rgba(255,255,255,.16);border-radius:99px;padding:0 22px}
+.sx-btn.sec{border-radius:50%}
+body.sx .qtags button,body.sx .qtags .qt{padding:8px 16px}
+body.sx .qtags svg{width:13px;height:13px}
+body.sx .stats div{border-radius:20px}
+
+/* узкое окно */
+@media(max-width:1180px){html.nx-app .sx-bar{padding-right:calc(150px + 108px)}}
+@media(max-width:980px){html.nx-app body.sx #nav .nl.prof .npn{display:none}html.nx-app body.sx #nav .nl.prof{right:calc(var(--fr) + 30px + 108px);padding-right:6px}html.nx-app body.sx #nav .nl.prof::after{display:none}}
+
+/* ===== 6. каталог по страницам: номера, загрузка, заглушки ===== */
+.pgr{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:30px 0 6px}
+.pgr button{min-width:38px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#c9cbd6;font-size:.86rem;font-weight:600;display:grid;place-items:center;cursor:pointer;transition:background .2s var(--ease),color .2s,border-color .2s}
+.pgr button svg{width:15px;height:15px}
+.pgr button:hover:not(:disabled):not(.on){background:rgba(255,255,255,.11);color:#fff}
+.pgr button.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink,#fff);cursor:default}
+.pgr button:disabled{opacity:.3;cursor:default}
+.pg-gap{color:var(--mut);padding:0 3px;user-select:none}
+.pg-info{margin-left:12px;color:var(--mut);font-size:.8rem}
+#grid{transition:opacity .15s}
+#grid.is-loading{opacity:.4;pointer-events:none}
+body.sx .gc.gc-sk{position:relative;overflow:hidden;background:rgba(255,255,255,.045);box-shadow:none;animation:none;pointer-events:none}
+.gcsk-i{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%);transform:translateX(-100%);animation:gcskMove 1.25s ease-in-out infinite}
+@keyframes gcskMove{to{transform:translateX(100%)}}
+@media(max-width:700px){.pg-info{display:none}.pgr button{min-width:34px;height:34px;padding:0 9px}}
+
+/* ===== 7. галереи: стрелки по центру, внутри границ, с мягким стеклянным фоном ===== */
+.viewer .vnav{top:50%;z-index:7;transform:translateY(-50%);background:rgba(12,12,16,.72);border-color:rgba(255,255,255,.2);backdrop-filter:blur(14px);box-shadow:0 10px 28px rgba(0,0,0,.42)}
+.viewer .vnav.prev{left:14px}.viewer .vnav.next{right:14px}
+.viewer .vnav:hover{background:#fff;color:#000;border-color:#fff;transform:translateY(-50%) scale(1.06)}
+.sc-nav{top:50%;margin-top:0;z-index:8;transform:translateY(-50%);background:rgba(12,12,16,.7);border-color:rgba(255,255,255,.2);backdrop-filter:blur(14px);box-shadow:0 10px 28px rgba(0,0,0,.42)}
+.sc-nav.prev{left:8px}.sc-nav.next{right:8px}
+.sc-nav:hover{background:#fff;color:#000;border-color:#fff;transform:translateY(-50%) scale(1.06)}
+.nxcf-nav{z-index:8;background:rgba(12,12,16,.72);border-color:rgba(255,255,255,.22);box-shadow:0 10px 28px rgba(0,0,0,.42);transition:opacity .2s,background .2s,color .2s,border-color .2s,transform .2s}
+.nxcf-nav.prev{left:8px}.nxcf-nav.next{right:8px}
+.nxcf-nav:hover{transform:scale(1.06)}
+
+/* ===== 8. фильтры не обрезаются боковыми затуханиями #home::before/::after ===== */
+body.sx #home .pagehead,
+body.sx #home .spotlight,
+body.sx #home .qtags{position:relative;z-index:6}
+body.sx #home .spotlight{overflow:visible}
+body.sx #chips.spot-chips{padding:2px 6px;overflow:visible}
+body.sx #chips.spot-chips .fc:focus-visible{outline-offset:3px}
+
+/* ===== 9. цвет обложки: верхнее свечение и плотное затемнение снизу ===== */
+.gc-glow,.sc-glow,.cf-glow{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .55s var(--ease);background:radial-gradient(130% 82% at 50% -14%,var(--gc-accent-glow,transparent) 0%,color-mix(in srgb,var(--gc-accent) 26%,transparent) 34%,transparent 72%)}
+.gc.has-color .gc-glow{opacity:.9}
+.sc.has-color .sc-glow,.cf-shot.has-color .cf-glow{opacity:.72}
+body.sx .gc-shade{background:linear-gradient(to top,rgba(0,0,0,.98) 0%,rgba(0,0,0,.9) 16%,rgba(0,0,0,.52) 46%,transparent 72%)}
+.cf-shot-shade{background:linear-gradient(to top,rgba(0,0,0,.92),rgba(0,0,0,.4) 34%,transparent 62%)}
+body.sx .gc.has-color{box-shadow:0 -16px 38px -22px var(--gc-accent-glow),0 14px 36px rgba(0,0,0,.35)}
+body.sx .gc.has-color:hover{box-shadow:0 22px 50px rgba(0,0,0,.5),0 -20px 48px -22px var(--gc-accent-glow);border-color:color-mix(in srgb,var(--gc-accent) 62%,transparent)}
+.sc.has-color,.cf-shot.has-color{box-shadow:0 -20px 54px -28px var(--gc-accent-glow)}
+#pager{position:relative;z-index:9}
+.pgr .pg-info{font-variant-numeric:tabular-nums}

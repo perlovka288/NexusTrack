@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>if(window.nxWin)document.documentElement.classList.add('nx-app');</script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<script>(function(){try{var a=localStorage.getItem('nx.accent');if(/^#[0-9a-f]{6}$/i.test(a||'')){var n=parseInt(a.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,s=document.documentElement.style;s.setProperty('--acc',a);s.setProperty('--acc-ink',(0.299*r+0.587*g+0.114*b)>150?'#000000':'#ffffff');s.setProperty('--acc-soft',a+'33');s.setProperty('--acc-glow',a+'4d');}}catch(e){}})();</script>
+<meta name="application-name" content="NEXUS">
+<meta name="apple-mobile-web-app-title" content="NEXUS">
+<title>NEXUS — каталог, библиотека и трекер игр</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="coverflow.css">
+<link rel="stylesheet" href="catalog.css">
+<link rel="stylesheet" href="sx.css">
+<link rel="stylesheet" href="nexus-v4.css">
+<link rel="stylesheet" href="nexus-compat.css">
+<link rel="stylesheet" href="nexus-v5.css">
+<link rel="stylesheet" href="nexus-v6.css">
+<link rel="stylesheet" href="nexus-v7.css">
+<link rel="stylesheet" href="nexus-admin.css">
+</head>
+<body class="sx">
+<header class="top">
+  <a class="logo" href="#" id="logo" aria-label="NEXUS — на главную"><img src="img/logo.png" alt="" width="62" height="30"><span>NEXUS</span></a>
+  <div class="search">
+    <span class="search-ico" aria-hidden="true"><svg class="ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.7-3.7"></path></svg></span>
+    <input id="q" type="search" placeholder="Поиск в каталоге…" autocomplete="off" aria-label="Поиск игр">
+    <ul id="sug" class="sug" hidden></ul>
+  </div>
+  <nav id="nav" aria-label="Разделы"></nav>
+</header>
+<main id="home">
+  <div class="pagehead"><h1 id="h1"></h1><p id="sub" class="mut"></p></div>
+  <div id="collbar" class="collbar" hidden></div>
+  <div id="stats" class="stats"></div>
+  <section id="spotlight" class="spotlight" aria-label="Поиск и действия с каталогом">
+    <div class="spot-card">
+      <div class="spot-main">
+        <div id="spotsearch" class="spot-search">
+          <span class="spot-ico" aria-hidden="true"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.7-3.7"></path></svg></span>
+          <div class="spot-field">
+            <input id="sq" type="search" autocomplete="off" spellcheck="false" aria-label="Поиск игр в каталоге">
+            <span id="spotph" class="spot-ph" aria-hidden="true"><span>Найти игру</span></span>
+          </div>
+          <button id="sqclear" class="spot-clear" type="button" aria-label="Очистить поиск" hidden><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+          <kbd class="spot-kbd" aria-hidden="true">Ctrl K</kbd>
+          <ul id="sugs" class="spot-sug" hidden></ul>
+        </div>
+        <label id="lsearch" class="lsearch spot-lsearch" hidden></label>
+        <div class="toolr spot-actions">
+          <button id="allGamesBtn" class="fc spot-circle" data-act="nx-allgames" title="Все игры: расширенные фильтры" aria-label="Все игры: расширенные фильтры"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg><span class="sclbl">Все игры</span></button>
+          <button id="fbtn" class="fc fbtn spot-circle" aria-expanded="false" aria-controls="fpanel"></button>
+          <label class="mut sortl spot-circle" title="Сортировка">
+            <span class="sl">Сортировка</span>
+            <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M7 4 4 7M7 4l3 3M17 20V4M17 20l-3-3M17 20l3-3"></path></svg>
+            <select id="sort" aria-label="Сортировка"></select>
+          </label>
+          <span id="vmodebox"></span>
+        </div>
+      </div>
+      <div id="chips" class="chips2 spot-chips"></div>
+      <div id="fpanel" class="fpanel" hidden></div>
+    </div>
+  </section>
+  <div id="quicktags" class="qtags" hidden></div>
+  <div id="settingsBox" class="settings" hidden></div>
+  <div id="profileBox" class="pf" hidden></div>
+  <div id="showcase"></div>
+  <div id="rows"></div>
+  <section id="grid" class="grid" aria-live="polite"></section>
+  <section id="calendarBox" class="calendar" hidden></section>
+  <section id="studioBox" class="studio" hidden></section>
+  <div id="pager"></div>
+  <p id="empty" class="empty mut" hidden></p>
+  <div class="morewrap"><button id="more" class="btn big" hidden></button></div>
+  <div id="folderbar" class="folderbar" hidden></div>
+  <div id="listfade" class="listfade" hidden aria-hidden="true"></div>
+  <p id="rawgnote" hidden></p>
+</main>
+<section id="page" hidden></section>
+<div id="lb" class="lb" hidden role="dialog" aria-modal="true" aria-label="Просмотр скриншота"></div>
+<div id="modal" class="modal" hidden></div>
+<div id="toast" class="toast" role="status"></div>
+<script src="search.js"></script>
+<script src="catalog-data.js"></script>
+<script src="filters.js"></script>
+<script src="rewind.js"></script>
+<script src="coverflow.js"></script>
+<script src="app.js"></script>
+<script src="nexus-catalog.js"></script>
+<script src="extra.js"></script>
+<script src="profile.js"></script>
+<script src="nexus-ui.js"></script>
+<script src="nexus-more.js"></script>
+<script src="nexus-features.js"></script>
+<script src="switch-ui.js"></script>
+<script src="sx.js"></script>
+<script src="nexus-v4.js"></script>
+<script src="nexus-fast.js"></script>
+<script src="nexus-v6.js"></script>
+<script src="nexus-v7.js"></script>
+<script src="nexus-admin.js"></script>
+<script>if ('serviceWorker' in navigator && !/Electron/i.test(navigator.userAgent) && (location.protocol === 'https:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname))) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
+</body>
+</html>

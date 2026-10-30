@@ -1,0 +1,49 @@
+{
+  "1196590": {
+    "name": "Resident Evil Village",
+    "status": "playing",
+    "hours": 0.998236,
+    "rating": "",
+    "note": "",
+    "src": "steam",
+    "added": "2026-10-29T21:32:12.733Z",
+    "auto": true,
+    "dir": "D:/Games/Resident Evil Village BIOHAZARD VILLAGE",
+    "fav": false,
+    "folders": [],
+    "released": "2021-05-07",
+    "genres": [
+      "Adventure",
+      "Action"
+    ],
+    "firstPlayed": "2026-10-29T21:32:16.634Z",
+    "started": "2026-10-29",
+    "playedOn": [
+      "pc"
+    ],
+    "last": "2026-10-29T22:32:10.171Z",
+    "days": {
+      "2026-10-29": 1656.8,
+      "2026-10-30": 1925.4
+    },
+    "dp": {
+      "2026-10-29": {
+        "p": {
+          "pc": 1661.643
+        }
+      },
+      "2026-10-30": {
+        "p": {
+          "pc": 1931.91
+        }
+      }
+    },
+    "sessions": [
+      {
+        "s": 1793309536633,
+        "e": 1793313130170,
+        "sec": 3594
+      }
+    ]
+  }
+}

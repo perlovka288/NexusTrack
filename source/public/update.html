@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="dark">
+<title>Обновление NEXUS</title>
+<style>
+  :root{--bg:#0d0e13;--s1:#13141b;--s2:#181a23;--line:rgba(255,255,255,.09);--mut:#868a9c;--acc:#ff6a2b;--acc-ink:#fff}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:#f2f3f7;font:14px/1.5 Inter,"Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;padding:26px 28px 24px;user-select:none}
+  .tag{align-self:flex-start;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);background:rgba(255,106,43,.14);padding:4px 10px;border-radius:99px;font-weight:600}
+  h1{margin:14px 0 4px;font-size:22px;font-weight:700}
+  .ver{color:var(--mut);margin:0 0 16px}
+  .ver b{color:#f2f3f7;font-weight:600}
+  .log{flex:1;min-height:0;overflow:auto;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:12px 14px;white-space:pre-wrap;user-select:text;color:#cfd1dc}
+  .log:empty::before{content:"Описание изменений не указано.";color:var(--mut)}
+  .bar{height:8px;border-radius:99px;background:var(--s2);overflow:hidden;margin-top:16px;display:none}
+  .bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:99px;transition:width .15s}
+  .st{min-height:22px;margin-top:8px;color:var(--mut);font-size:13px}
+  .st.err{color:#ff7a7a}
+  .row{display:flex;gap:10px;margin-top:14px}
+  button{flex:1;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--s2);color:#f2f3f7;font:600 14px Inter,"Segoe UI",system-ui,sans-serif;cursor:pointer}
+  button:hover:not(:disabled){filter:brightness(1.15)}
+  button.pri{background:var(--acc);color:var(--acc-ink);border-color:transparent}
+  button:disabled{opacity:.5;cursor:default}
+</style>
+</head>
+<body>
+  <span class="tag">Доступно обновление</span>
+  <h1>NEXUS <span id="nv">…</span></h1>
+  <p class="ver">Установлена версия <b id="cv">…</b></p>
+  <div id="log" class="log"></div>
+  <div class="bar" id="bar"><i id="fill"></i></div>
+  <div class="st" id="st"></div>
+  <div class="row">
+    <button id="later" type="button">Позже</button>
+    <button id="go" class="pri" type="button">Обновить сейчас</button>
+  </div>
+<script src="update.js"></script>
+</body>
+</html>

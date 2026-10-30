@@ -1,0 +1,83 @@
+/* NEXUS compatibility: NexusGod settings and features on top of the NexusNew sx/v4 shell. */
+/* Подключается последним, чтобы сохранить сетку, прокрутку и служебные панели при новом дизайне. */
+
+/* ===== сетка: классический режим остаётся центрированной колонкой ===== */
+body.sx.nx-grid-classic main#home{
+  max-width:1200px;margin-left:auto;margin-right:auto;
+  padding-left:20px;padding-right:20px;
+}
+body.sx.nx-grid-classic #grid.grid{
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:20px;
+}
+
+/* ===== сетка: заполнение ширины и плотность ===== */
+/* Новый shell задаёт main#home отступ 30px; в режиме заполнения используем прежнюю раскладку. */
+body.sx.nx-grid-fill.nx-grid-active main#home{
+  max-width:none;width:100%;margin-left:0;margin-right:0;
+  padding-left:clamp(18px,2.8vw,54px);padding-right:clamp(18px,2.8vw,54px);
+}
+body.sx.nx-grid-fill.nx-grid-compact #grid.grid{grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:12px}
+body.sx.nx-grid-fill.nx-grid-wide #grid.grid{grid-template-columns:repeat(auto-fill,minmax(162px,1fr));gap:14px}
+body.sx #grid.grid.listmode{display:flex;flex-direction:column;gap:8px}
+/* карусель сама задаёт ширину карточки через --cf-card; новый shell не должен растягивать её на весь кадр */
+body.sx .nxcf .nxcf-card{width:var(--cf-card);max-width:none;flex:none;aspect-ratio:2/3}
+
+/* ленты главной: плотность и ширина карточек следуют выбранному стилю */
+body.sx.nx-grid-fill.nx-grid-compact{--cw-v4:clamp(136px,9.2vw,168px)}
+body.sx.nx-grid-fill.nx-grid-wide{--cw-v4:clamp(156px,10.4vw,192px)}
+body.sx.nx-grid-classic{--cw-v4:clamp(148px,10.2vw,184px)}
+
+/* ===== верхняя панель: поиск, очистка и порядок кнопок ===== */
+body.sx .sx-bar .search{position:relative}
+body.sx .sx-bar .search input{padding-right:42px}
+body.sx .sx-bar .search-clear{
+  position:absolute;right:9px;top:50%;transform:translateY(-50%);z-index:2;
+  display:none;width:26px;height:26px;
+}
+body.sx .sx-bar .search:has(input:not(:placeholder-shown)) .search-clear{display:grid}
+@media(max-width:900px){
+  body.sx .sx-bar .search{order:0;flex:0 1 300px;flex-basis:auto;max-width:none}
+  body.sx .sx-bar .sx-sp{order:1}
+  body.sx .sx-bar .spot-actions{order:2}
+  body.sx .sx-bar .sx-ib{order:3}
+}
+
+/* ===== библиотека: строка статусов, ручная подборка и вкладка по умолчанию ===== */
+body.sx #chips.spot-chips{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  max-width:100%;min-width:0;overflow:visible;
+}
+body.sx #chips.spot-chips .fc{max-width:100%}
+body.sx .libpref{display:inline-flex;flex:0 1 auto;min-width:0}
+body.sx .libpref select{max-width:132px}
+body.sx .spot-card{min-width:0}
+
+/* ===== прокрутка страницы игры: сохраняем split-screen и классический поток ===== */
+@media(min-width:901px){
+  body.sx.nx-game-independent #page:not([hidden]){min-height:calc(100vh - 63px)}
+  body.sx.nx-game-independent #page .gwrap{
+    width:100%;max-width:1200px;margin:0 auto;padding:0 20px 96px;
+    display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:40px;align-items:start;
+  }
+  body.sx.nx-game-independent #page .gmain{min-width:0;min-height:0}
+  body.sx.nx-game-independent #page .gscroll{
+    max-height:calc(100vh - 170px);overflow-y:auto;overscroll-behavior:contain;
+    padding:2px 12px 40px 0;scrollbar-width:thin;scrollbar-color:#333 transparent;
+  }
+  body.sx.nx-game-independent #page #pside{
+    position:sticky;top:calc(var(--fr) + 98px);min-width:0;max-height:calc(100vh - 140px);
+    overflow-y:auto;overscroll-behavior:contain;padding:26px 0 40px;
+    scrollbar-width:thin;scrollbar-color:#333 transparent;
+  }
+  body.sx.nx-game-classic #page .gscroll{max-height:none;overflow:visible;padding-right:0}
+  body.sx.nx-game-classic #page #pside{max-height:none;overflow:visible}
+}
+
+/* ===== полноэкранные подборки и календарь поверх нового окна ===== */
+body.sx .nxfull,body.sx .nxall{z-index:120}
+html.nx-app .nxfull,html.nx-app .nxall{inset:var(--fr);border-radius:var(--rad)}
+body.sx .listfade{z-index:8}
+html.nx-app body.sx .listfade{left:var(--fr);right:var(--fr);bottom:var(--fr);border-radius:0 0 var(--rad) var(--rad)}
+
+/* ===== нижнее затухание списка: не перекрывает пагинацию ===== */
+body.sx .pgr{position:relative;z-index:9;padding-bottom:12px}

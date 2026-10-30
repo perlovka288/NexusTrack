@@ -1,0 +1,52 @@
+{
+  "keys": {
+    "steamgriddb": "",
+    "rawg": "",
+    "steamKey": "",
+    "steamId": "",
+    "deepl": ""
+  },
+  "tracker": {
+    "enabled": true,
+    "autoAdd": true,
+    "autoStatus": true,
+    "folders": [],
+    "ignore": []
+  },
+  "launch": {
+    "fullscreen": true
+  },
+  "mobile": {
+    "enabled": false,
+    "port": 8787,
+    "token": ""
+  },
+  "ui": {
+    "accent": "",
+    "libraryTab": "all",
+    "gridFill": true,
+    "gridStyle": "wide",
+    "gameScroll": "independent"
+  },
+  "emulators": {},
+  "switch": {
+    "enabled": true,
+    "autoScan": true,
+    "emulatorDirs": [],
+    "ftp": {
+      "host": "",
+      "port": 21,
+      "user": "",
+      "pass": "",
+      "path": "nand/user/save"
+    },
+    "companion": {
+      "enabled": true,
+      "port": 8788,
+      "code": "057992",
+      "lastAt": ""
+    },
+    "lastScan": "2026-10-29T23:43:03.503Z",
+    "lastSync": ""
+  }
+}

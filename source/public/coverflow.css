@@ -1,0 +1,230 @@
+/* ===== NEXUS coverflow =====
+   Runtime styling for public/coverflow.js. Loaded after style.css so the
+   carousel can take over the width/transform of .gc and .sc cards. */
+
+.nxcf {
+  --cf-pad: 26px;
+  position: relative;
+  width: 100%;
+}
+.nxcf.cf-showcase { --cf-pad: 30px; }
+.nxcf.cf-row { --cf-pad: 12px; }
+
+.nxcf-viewport { position: relative; }
+
+.nxcf-frame {
+  position: relative;
+  overflow: hidden;
+  padding: var(--cf-pad) 0;
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+  perspective: calc(var(--cf-card) * var(--cf-persp, 3));
+}
+.nxcf-frame.dragging { cursor: grabbing; }
+.nxcf-frame:focus-visible {
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 2px var(--acc, #fff);
+}
+
+.nxcf-stage {
+  position: relative;
+  height: var(--cf-card);
+  transform-style: preserve-3d;
+}
+
+/* The carousel owns the transform, so card-level hover transitions must not
+   interpolate the per-frame matrix. */
+.nxcf .nxcf-card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--cf-card);
+  margin: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transition: border-color .25s, box-shadow .25s;
+}
+.nxcf .nxcf-card.is-active { box-shadow: 0 28px 64px rgba(0, 0, 0, .62); }
+.nxcf .nxcf-card .gc-link,
+.nxcf .nxcf-card img { -webkit-user-drag: none; }
+
+/* Showcase slide: a clean cover with badges; the caption lives below the
+   carousel, like the reference component. */
+.cf-shot {
+  display: block;
+  position: absolute;
+  aspect-ratio: 3 / 4;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: #0b0b0b;
+  color: #fff;
+  text-decoration: none;
+}
+.cf-shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .8s cubic-bezier(.2, .7, .2, 1);
+}
+.cf-shot:hover img { transform: scale(1.05); }
+.cf-shot .ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end start;
+  padding: 18px;
+  background: linear-gradient(160deg, #2b2b2b, #080808);
+  font-weight: 600;
+  color: #cfcfcf;
+}
+.cf-shot-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, .74), transparent 46%);
+}
+.cf-shot-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+.cf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .58);
+  border: 1px solid rgba(255, 255, 255, .26);
+  backdrop-filter: blur(12px);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+.cf-badge.st {
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+  font-size: .7rem;
+}
+.cf-badge svg { color: #ffd76a; fill: currentColor; }
+
+/* Navigation */
+.nxcf-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .62);
+  border: 1px solid rgba(255, 255, 255, .28);
+  color: #fff;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s, background .2s, color .2s, border-color .2s;
+}
+.nxcf:hover .nxcf-nav,
+.nxcf-nav:focus-visible { opacity: 1; }
+.nxcf-nav:hover { background: #fff; color: #000; border-color: #fff; }
+.nxcf-nav.prev { left: 4px; }
+.nxcf-nav.next { right: 4px; }
+@media (hover: none) { .nxcf-nav { opacity: 1; } }
+
+/* Caption */
+.nxcf-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 86px;
+  margin-top: 4px;
+  padding: 0 24px;
+}
+.nxcf-cap-title {
+  font-size: 1.06rem;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.nxcf-cap-sub { margin-top: 3px; font-size: .86rem; color: var(--mut); }
+.nxcf-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  margin-top: 10px;
+  font-size: .78rem;
+}
+.nxcf-meta > div { display: flex; gap: 7px; }
+.nxcf-meta dt { color: var(--mut); }
+.nxcf-meta dd { margin: 0; color: #fff; font-weight: 500; }
+.nxcf-caption.anim { animation: nxcfIn .3s ease both; }
+@keyframes nxcfIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Pagination */
+.nxcf-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-height: 16px;
+  margin-top: 10px;
+}
+.nxcf-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  opacity: .28;
+  cursor: pointer;
+  transition: opacity .2s, transform .2s;
+}
+.nxcf-dot.on { opacity: 1; transform: scale(1.25); }
+.nxcf-count { font-size: .78rem; color: var(--mut); letter-spacing: .02em; }
+
+/* Loading state for the showcase rows */
+.cf-skel {
+  --cf-card: clamp(168px, 20vw, 250px);
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  padding: 6px 2px 14px;
+}
+.cf-skel .sc.sk { width: var(--cf-card); }
+
+/* The catalog coverflow replaces the CSS grid with one 3D stage */
+.grid.cfmode { display: block; }
+.cf-host-catalog { padding: 4px 0 16px; }
+
+@media (max-width: 600px) {
+  .nxcf.cf-showcase { --cf-pad: 20px; }
+  .nxcf-nav { width: 38px; height: 38px; margin-top: -19px; }
+  .nxcf-nav.prev { left: 0; }
+  .nxcf-nav.next { right: 0; }
+  .nxcf-caption { padding: 0 12px; }
+}
